@@ -33,7 +33,11 @@ class Spoj():
         #s.start()
 
         br.open('http://www.spoj.com/submit/')
-        br.select_form(name='login')
+        for form in br.forms():
+            if form.attrs['id'] == 'login-form':
+                br.form = form
+                break
+        #  br.select_form(id='login-form')
         br['login_user'] = username
         br['password'] = password
         br.submit()
@@ -72,7 +76,11 @@ class Spoj():
         try:
             br.open(urls.BASE_URL)
             try:
-                br.select_form(name='login')
+                for form in br.forms():
+                    if form.attrs['id'] == 'login-form':
+                        br.form = form
+                        break
+                #  br.select_form(id='login-form')
                 br['login_user'] = username
                 br['password'] = password
                 #br.find_control(name='autologin').items[0].selected = True
@@ -87,7 +95,7 @@ class Spoj():
                 return False
             br.submit()
             for link in br.links():
-                if link.text == 'my account':
+                if 'My profile' in link.text:
                     utils.save_cookies(cj)
                     click.echo('Account Verified!')
                     return True
