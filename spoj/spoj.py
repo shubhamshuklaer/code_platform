@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 import json
 import time
 import sys
-
+#  http://mattshaw.org/news/python-mechanize-gzip-response-handling/
 def ungzipResponse(r,b):
     headers = r.info()
     if headers['Content-Encoding']=='gzip':
