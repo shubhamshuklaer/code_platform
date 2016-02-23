@@ -29,6 +29,58 @@ def set_language(language):
         config.write(configfile)
 
 
+def set_root(root):
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if not config.has_section('root'):
+        config.add_section('root')
+    config.set('root','dir',root)
+
+    with open(utils.get_config_file(), 'wb') as configfile:
+        config.write(configfile)
+
+def set_extension(lang_code,extension):
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if not config.has_section('extension'):
+        config.add_section('extension')
+    config.set('extension',lang_code, extension)
+    with open(utils.get_config_file(), 'wb') as configfile:
+        config.write(configfile)
+
+def get_extension(lang_code):
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if config.has_option('extension', lang_code):
+        return config.get('extension', lang_code)
+    else:
+        return None
+
+def set_cmp_cmd(lang_code,cmp_cmd):
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if not config.has_section('cmp_cmd'):
+        config.add_section('cmp_cmd')
+    config.set('cmp_cmd',lang_code, cmp_cmd)
+    with open(utils.get_config_file(), 'wb') as configfile:
+        config.write(configfile)
+
+def get_cmp_cmd(lang_code):
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if config.has_option('cmp_cmd', lang_code):
+        return config.get('cmp_cmd', lang_code)
+    else:
+        return None
+
+def get_root():
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if config.has_option('root', 'dir'):
+        return config.get('root', 'dir')
+    else:
+        return None
+
 def get_language():
     config = ConfigParser.ConfigParser()
     config.read([utils.get_config_file()])

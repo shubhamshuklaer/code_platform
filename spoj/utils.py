@@ -6,6 +6,7 @@ import getpass
 import mechanize
 import sys
 import time
+import lang
 
 APP_NAME = 'PYTHON_SPOJ'
 CONFIG = 'config'
@@ -83,3 +84,15 @@ def ask_credentials():
     username = raw_input('Username: ')
     password = ask_pass()
     return username, password
+
+def ask_extension():
+    lang_code = raw_input('Enter language code: ')
+    click.echo(lang.LANG_DICT[int(lang_code)])
+    extension = raw_input('Enter extension(ignore the dot): ')
+    return lang_code,extension
+
+def ask_cmp_cmd():
+    lang_code = raw_input('Enter language code: ')
+    click.echo(lang.LANG_DICT[int(lang_code)])
+    cmp_cmd = raw_input('Enter cmp_cmd(inp_file and out_file placeholder): ')
+    return lang_code,cmp_cmd

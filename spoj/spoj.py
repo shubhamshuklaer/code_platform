@@ -44,7 +44,7 @@ class Spoj():
         br.addheaders.append( ['Accept-Encoding','gzip'] )
 
         try:
-            r=br.open('http://www.spoj.com/')
+            r=br.open(urls.BASE_URL)
             ungzipResponse(r,br)
 
             found=False
@@ -90,7 +90,7 @@ class Spoj():
         if br == None:
             return False, 'Login failed'
 
-        r=br.open('http://www.spoj.com/submit/')
+        r=br.open(urls.SUBMIT_URL)
         ungzipResponse(r,br)
         # br.response().read() will return the html text
         #  click.echo(br.response().read())
@@ -129,7 +129,7 @@ class Spoj():
     def fetch_status(self):
         submissionId = self.submissionId
         while True:
-            r = urlopen('http://www.spoj.com/status/ajax=1,ajaxdiff=1',
+            r = urlopen(urls.STATUS_URL,
                         data=urlencode(dict(
                             ids=submissionId
                         )))
