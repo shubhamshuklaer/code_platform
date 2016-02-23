@@ -8,16 +8,6 @@ A command line tool for SPOJ in python
 
 ## Installation
 
-<!-- If you have installed `pip` or `easy_install`, you can directly install this from pypi by: -->
-    
-    <!-- $ pip install --upgrade python_spoj -->
-
-<!-- or -->
-
-    <!-- $ easy_install python_spoj -->
-
-<!-- You can also download source from here or from [Pypi Repo](https://pypi.python.org/pypi/python_spoj) and then use: -->
-
     $ python setup.py install
 
 ## Documentation
