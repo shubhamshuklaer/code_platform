@@ -98,6 +98,12 @@ def ask_cmp_cmd():
     cmp_cmd = raw_input('Enter cmp_cmd(inp_file and out_file placeholder): ')
     return lang_code,cmp_cmd
 
+def ask_run_cmd():
+    lang_code = raw_input('Enter language code: ')
+    click.echo(lang.LANG_DICT[int(lang_code)])
+    run_cmd = raw_input('Enter run_cmd(inp_file and out_file placeholder): ')
+    return lang_code,run_cmd
+
 def get_info(cwd):
     info_file=os.path.join(cwd,'info.txt')
     if not os.path.exists(info_file):

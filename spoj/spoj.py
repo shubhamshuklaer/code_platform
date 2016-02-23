@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 import json
 import time
 import sys
-from subprocess import call
+from subprocess import Popen,PIPE
 #  http://mattshaw.org/news/python-mechanize-gzip-response-handling/
 def ungzipResponse(r,b):
     headers = r.info()
@@ -43,9 +43,38 @@ class Spoj():
         click.echo(cmd)
         ret_val=os.system(cmd)
         if ret_val == 0:
-            os.system('git commit -m "'+self.problem+' compile success"')
+            status="success"
         else:
-            os.system('git commit -m "'+self.problem+' compile failed"')
+            status="failed"
+        os.system('git commit -m "%s compile %s"' %(self.problem,status))
+
+    def run(self,test_case_num):
+        os.system('git add --all')
+        cmd=config.get_run_cmd(self.language)
+        cmd=cmd.replace('inp_file',self.filename)
+        cmd=cmd.replace('out_file',self.problem)
+        click.echo(cmd)
+        if test_case_num is None:
+            ret_val=Popen(cmd)
+            message=self.problem+' return code '+ret_val
+        elif test_case_num == 0:
+            #Run all test cases
+            click.echo("TODO")
+            message("TODO")
+        else:
+            p=Popen(cmd,stdout=PIPE, stderr=PIPE, stdin=PIPE)
+            p.stdin.write(open("i_"+test_case_num+".txt").read())
+            expected_out=open("eo_"+test_case_num+".txt").read()
+            output=p.stdout.read()
+            open("o_"+test_case_num+".txt","w").write(output)
+            if output == expected_out:
+                message="Test case no. "+test_case_num+" ran with success"
+                click.echo("Success")
+            else:
+                message="Test case no. "+test_case_num+" ran with failure"
+                click.echo("Failed")
+
+        os.system('git commit -m " %s "' % (message))
 
     def start(self):
         prob_dir=os.path.join(os.path.join(config.get_root(),'spoj'),self.problem)

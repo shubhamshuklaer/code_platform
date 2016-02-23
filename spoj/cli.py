@@ -23,6 +23,18 @@ def cmpile(ctx):
     spoj.cmpile()
     pass
 
+@click.command()
+@click.argument('test_case_num',required=True)
+@click.pass_context
+def run(ctx,test_case_num):
+    check,problem,language,filename=utils.get_info(os.getcwd())
+    if not check:
+        ctx.exit("Fix problems")
+    spoj = Spoj(problem,language,filename)
+    spoj.run(test_case_num)
+    pass
+
+
 
 @click.command()
 @click.argument('problem',required=True)
@@ -37,6 +49,8 @@ def start(ctx,problem,language):
         ctx.exit("Please set extension for lang "+language)
     if Config.get_cmp_cmd(language) is None:
         ctx.exit("Please set cmp_cmd for lang "+language)
+    if Config.get_run_cmd(language) is None:
+        ctx.exit("Please set run_cmd for lang "+language)
     spoj=Spoj(problem,language,problem+"."+Config.get_extension(language))
     spoj.start()
     pass
@@ -65,8 +79,9 @@ def submit(ctx):
 @click.option('--root','-r', help='Choose root directory for storing code')
 @click.option('--extension','-e',help='Give extention for a file type',is_flag=True)
 @click.option('--cmp_cmd',help='Give compile command, inp_file and out_file are placeholders',is_flag=True)
+@click.option('--run_cmd',help='Give run command, inp_file and out_file are placeholders',is_flag=True)
 @click.pass_context
-def config(ctx, language, credential,root,extension,cmp_cmd):
+def config(ctx, language, credential,root,extension,cmp_cmd,run_cmd):
     if credential:
         username, password = utils.ask_credentials()
         click.echo('Verifying Credentials...Please wait')
@@ -91,6 +106,9 @@ def config(ctx, language, credential,root,extension,cmp_cmd):
     if cmp_cmd:
         lang_code,cmp_cmd=utils.ask_cmp_cmd()
         Config.set_cmp_cmd(lang_code,cmp_cmd)
+    if run_cmd:
+        lang_code,run_cmd=utils.ask_run_cmd()
+        Config.set_run_cmd(lang_code,run_cmd)
     pass
 
 
@@ -111,3 +129,4 @@ main.add_command(language)
 main.add_command(status)
 main.add_command(start)
 main.add_command(cmpile)
+main.add_command(run)

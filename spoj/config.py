@@ -73,6 +73,23 @@ def get_cmp_cmd(lang_code):
     else:
         return None
 
+def set_run_cmd(lang_code,run_cmd):
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if not config.has_section('run_cmd'):
+        config.add_section('run_cmd')
+    config.set('run_cmd',lang_code, run_cmd)
+    with open(utils.get_config_file(), 'wb') as configfile:
+        config.write(configfile)
+
+def get_run_cmd(lang_code):
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if config.has_option('run_cmd', lang_code):
+        return config.get('run_cmd', lang_code)
+    else:
+        return None
+
 def get_root():
     config = ConfigParser.ConfigParser()
     config.read([utils.get_config_file()])
