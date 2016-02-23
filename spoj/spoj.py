@@ -32,35 +32,63 @@ class Spoj():
         self.language = language
         self.filename = filename
 
+    @staticmethod
+    def login(username=None,password=None):
+        if username is None:
+            username, password = config.get_credentials()
+            if username is None:
+                username, password = utils.ask_credentials()
+
+        br = mechanize.Browser(factory=mechanize.RobustFactory())
+        br.set_handle_robots(False)
+        br.addheaders.append( ['Accept-Encoding','gzip'] )
+
+        try:
+            r=br.open('http://www.spoj.com/')
+            ungzipResponse(r,br)
+
+            found=False
+            for form in br.forms():
+                if form.attrs['id'] == 'login-form':
+                    br.form = form
+                    found=True
+                    break
+
+            if found == False:
+                click.echo("Couldn't find login form")
+                return None
+
+            br['login_user'] = username
+            br['password'] = password
+
+            r=br.submit()
+            ungzipResponse(r,br)
+
+            for link in br.links():
+                if 'My profile' in link.text:
+                    click.echo('Login Success')
+                    return br
+
+            click.echo('Wrong Username/Password. Try Again')
+            return None
+        except mechanize.URLError:
+            click.echo('Error in connecting to internet. Please check your internet connection')
+            return None
+
+
+
     # Using gzip for faster encoding of page
     # using factory=mechanize.RobustFactory() so to use a more robust parser as
     # the default parser was unable to handle www.spoj.com/submit/
     def submit(self):
-        username, password = config.get_credentials()
-        if username is None:
-            username, password = utils.ask_credentials()
+
         with open(self.filename.name, 'r') as codefile:
             solution = codefile.read()
-        br = mechanize.Browser(factory=mechanize.RobustFactory())
-        br.set_handle_robots(False)
-        br.addheaders.append( ['Accept-Encoding','gzip'] )
-        r=br.open('http://www.spoj.com/')
-        ungzipResponse(r,br)
-        for form in br.forms():
-            if form.attrs['id'] == 'login-form':
-                br.form = form
-                break
-        br['login_user'] = username
-        br['password'] = password
-        r=br.submit()
-        ungzipResponse(r,br)
-        authorised = False
-        for link in br.links():
-            if 'My profile' in link.text:
-                authorised = True
-        if not authorised:
-            return False, 'Invalid username/password'
 
+        br=Spoj.login()
+
+        if br == None:
+            return False, 'Login failed'
 
         r=br.open('http://www.spoj.com/submit/')
         ungzipResponse(r,br)
@@ -90,43 +118,13 @@ class Spoj():
         #s.stop()
 
     @staticmethod
-    def verify_credentials(username, password):
-        cj = mechanize.MozillaCookieJar()
-        br = mechanize.Browser(factory=mechanize.RobustFactory())
-        br.set_cookiejar(cj)
-        br = utils.setup_browser(br)
-        try:
-            #  click.echo(urls.BASE_URL)
-            br.open(urls.BASE_URL)
-            try:
-                for form in br.forms():
-                    if form.attrs['id'] == 'login-form':
-                        br.form = form
-                        break
-                #  br.select_form(id='login-form')
-                br['login_user'] = username
-                br['password'] = password
-                #br.find_control(name='autologin').items[0].selected = True
-            except mechanize.FormNotFoundError:
-                click.echo('Error occurred. Code VC-FNFE. Kindly contact developer')
-                return False
-            except NameError:
-                click.echo('Error occurred. Code VC-NE. Kindly contact developer')
-                return False
-            except mechanize.ControlNotFoundError:
-                click.echo('Error occurred. Code VC-CNFE. Kindly contact developer')
-                return False
-            br.submit()
-            for link in br.links():
-                if 'My profile' in link.text:
-                    utils.save_cookies(cj)
-                    click.echo('Account Verified!')
-                    return True
-            click.echo('Wrong Username/Password. Try Again')
+    def verify_credentials(username,password):
+        if Spoj.login(username,password) == None:
             return False
-        except mechanize.URLError:
-            click.echo('Error in connecting to internet. Please check your internet connection')
-            return False
+        else:
+            return True
+
+
 
     def fetch_status(self):
         submissionId = self.submissionId
