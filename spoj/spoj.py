@@ -1,10 +1,12 @@
 __author__ = 'dheerendra'
 
+import os
 import mechanize
 import utils
 import urls
 import click
 import config
+import ConfigParser
 import re
 from urllib import urlencode
 from urllib2 import urlopen
@@ -31,6 +33,24 @@ class Spoj():
         self.problem = problem
         self.language = language
         self.filename = filename
+
+    def start(self):
+        prob_dir=os.path.join(os.path.join(config.get_root(),'spoj'),self.problem)
+
+        if not os.path.exists(prob_dir):
+            os.mkdir(prob_dir)
+
+        prob_file=os.path.join(prob_dir,self.filename)
+        prob_info_file=os.path.join(prob_dir,"info.txt")
+        if not os.path.exists(prob_file):
+            open(prob_file,'w')
+        if not os.path.exists(prob_info_file):
+            info=ConfigParser.ConfigParser()
+            info.add_section('info')
+            info.set('info','lang_code',self.language)
+            with open(prob_info_file,'wb') as info_file:
+                info.write(info_file)
+
 
     @staticmethod
     def login(username=None,password=None):

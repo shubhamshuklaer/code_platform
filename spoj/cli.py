@@ -15,6 +15,24 @@ def main(ctx):
 
 
 @click.command()
+@click.argument('problem',required=True)
+@click.option('--language','-l')
+@click.pass_context
+def start(ctx,problem,language):
+    if language is None:
+        language=Config.get_language()
+    if language is None:
+        ctx.exit("Please set default lang or provide as argument")
+    if Config.get_extension(language) is None:
+        ctx.exit("Please set extension for lang "+language)
+    if Config.get_cmp_cmd(language) is None:
+        ctx.exit("Please set cmp_cmd for lang "+language)
+    spoj=Spoj(problem,language,problem+"."+Config.get_extension(language))
+    spoj.start()
+    pass
+
+
+@click.command()
 @click.argument('filename', required=True, type=click.File())
 @click.option('--problem', '-p', help='Problem code')
 @click.option('--language', '-l', help='Language of problem. \033[91mSee `spoj language`\033[0m',
@@ -96,3 +114,4 @@ main.add_command(submit)
 main.add_command(config)
 main.add_command(language)
 main.add_command(status)
+main.add_command(start)
