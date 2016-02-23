@@ -80,8 +80,9 @@ def submit(ctx):
 @click.option('--extension','-e',help='Give extention for a file type',is_flag=True)
 @click.option('--cmp_cmd',help='Give compile command, inp_file and out_file are placeholders',is_flag=True)
 @click.option('--run_cmd',help='Give run command, inp_file and out_file are placeholders',is_flag=True)
+@click.option('--editor')
 @click.pass_context
-def config(ctx, language, credential,root,extension,cmp_cmd,run_cmd):
+def config(ctx, language, credential,root,extension,cmp_cmd,run_cmd,editor):
     if credential:
         username, password = utils.ask_credentials()
         click.echo('Verifying Credentials...Please wait')
@@ -109,6 +110,8 @@ def config(ctx, language, credential,root,extension,cmp_cmd,run_cmd):
     if run_cmd:
         lang_code,run_cmd=utils.ask_run_cmd()
         Config.set_run_cmd(lang_code,run_cmd)
+    if editor is not None:
+        Config.set_editor(editor)
     pass
 
 

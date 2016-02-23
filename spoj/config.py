@@ -114,3 +114,20 @@ def get_credentials():
     if not config.has_option('user', 'password'):
         return None, None
     return config.get('user', 'username'), utils.decode(config.get('user', 'password'))
+
+def set_editor(editor):
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if not config.has_section('editor'):
+        config.add_section('editor')
+    config.set('editor','editor', editor)
+    with open(utils.get_config_file(), 'wb') as configfile:
+        config.write(configfile)
+
+def get_editor():
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if config.has_option('editor', "editor"):
+        return config.get('editor', "editor")
+    else:
+        return None

@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 import json
 import time
 import sys
-from subprocess import Popen,PIPE
+from subprocess import Popen,PIPE,STDOUT
 #  http://mattshaw.org/news/python-mechanize-gzip-response-handling/
 def ungzipResponse(r,b):
     headers = r.info()
@@ -94,6 +94,11 @@ class Spoj():
             info.set('info','file_name',self.filename)
             with open(prob_info_file,'wb') as info_file:
                 info.write(info_file)
+
+        if config.get_editor() is not None:
+            os.chdir(prob_dir)
+            os.system(config.get_editor()+" "+self.filename)
+            #  Popen([config.get_editor(),self.filename],cwd=prob_dir,shell=True,stdin=0,stdout=1,stderr=STDOUT)
 
 
     @staticmethod
