@@ -32,6 +32,9 @@ class Spoj():
         self.language = language
         self.filename = filename
 
+    # Using gzip for faster encoding of page
+    # using factory=mechanize.RobustFactory() so to use a more robust parser as
+    # the default parser was unable to handle www.spoj.com/submit/
     def submit(self):
         username, password = config.get_credentials()
         if username is None:
@@ -65,11 +68,13 @@ class Spoj():
         #  click.echo(br.response().read())
 
         br.select_form(nr=0)
-
+        # To fix error 'problemcode' is read only
+        br.form.find_control('problemcode').readonly=False
         br['problemcode'] = self.problem
         br['file'] = solution
         br['lang'] = [self.language]
-        br.submit()
+        r=br.submit()
+        ungzipResponse(r,br)
         response = br.response().read()
         wrong_code = re.search(r'wrong\s+problem', response, re.IGNORECASE)
         if wrong_code:
