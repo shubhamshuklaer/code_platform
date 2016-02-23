@@ -112,7 +112,7 @@ class Spoj():
     # the default parser was unable to handle www.spoj.com/submit/
     def submit(self):
 
-        with open(self.filename.name, 'r') as codefile:
+        with open(self.filename, 'r') as codefile:
             solution = codefile.read()
 
         br=Spoj.login()
