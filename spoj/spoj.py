@@ -14,6 +14,17 @@ import json
 import time
 import sys
 
+def ungzipResponse(r,b):
+    headers = r.info()
+    if headers['Content-Encoding']=='gzip':
+        import gzip
+        gz = gzip.GzipFile(fileobj=r, mode='rb')
+        html = gz.read()
+        gz.close()
+        headers["Content-type"] = "text/html; charset=utf-8"
+        r.set_data( html )
+        b.set_response(r)
+
 class Spoj():
 
     def __init__(self, problem, language, filename):
@@ -27,28 +38,34 @@ class Spoj():
             username, password = utils.ask_credentials()
         with open(self.filename.name, 'r') as codefile:
             solution = codefile.read()
-        br = mechanize.Browser()
+        br = mechanize.Browser(factory=mechanize.RobustFactory())
         br.set_handle_robots(False)
-        #s = cSpinner()
-        #s.start()
-
-        br.open('http://www.spoj.com/submit/')
+        br.addheaders.append( ['Accept-Encoding','gzip'] )
+        r=br.open('http://www.spoj.com/')
+        ungzipResponse(r,br)
         for form in br.forms():
             if form.attrs['id'] == 'login-form':
                 br.form = form
                 break
-        #  br.select_form(id='login-form')
         br['login_user'] = username
         br['password'] = password
-        br.submit()
+        r=br.submit()
+        ungzipResponse(r,br)
         authorised = False
         for link in br.links():
-            if link.text == 'my account':
+            if 'My profile' in link.text:
                 authorised = True
         if not authorised:
             return False, 'Invalid username/password'
 
+
+        r=br.open('http://www.spoj.com/submit/')
+        ungzipResponse(r,br)
+        # br.response().read() will return the html text
+        #  click.echo(br.response().read())
+
         br.select_form(nr=0)
+
         br['problemcode'] = self.problem
         br['file'] = solution
         br['lang'] = [self.language]
@@ -70,10 +87,11 @@ class Spoj():
     @staticmethod
     def verify_credentials(username, password):
         cj = mechanize.MozillaCookieJar()
-        br = mechanize.Browser()
+        br = mechanize.Browser(factory=mechanize.RobustFactory())
         br.set_cookiejar(cj)
         br = utils.setup_browser(br)
         try:
+            #  click.echo(urls.BASE_URL)
             br.open(urls.BASE_URL)
             try:
                 for form in br.forms():
