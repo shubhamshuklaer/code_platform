@@ -7,6 +7,7 @@ import mechanize
 import sys
 import time
 import lang
+import ConfigParser
 
 APP_NAME = 'PYTHON_SPOJ'
 CONFIG = 'config'
@@ -96,3 +97,11 @@ def ask_cmp_cmd():
     click.echo(lang.LANG_DICT[int(lang_code)])
     cmp_cmd = raw_input('Enter cmp_cmd(inp_file and out_file placeholder): ')
     return lang_code,cmp_cmd
+
+def get_info(cwd):
+    info_file=os.path.join(cwd,'info.txt')
+    if not os.path.exists(info_file):
+        return False,None,None,None
+    config=ConfigParser.ConfigParser()
+    config.read(info_file)
+    return True,config.get('info','prob_code'),config.get('info','lang_code'),config.get('info','file_name')

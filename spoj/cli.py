@@ -13,6 +13,16 @@ from spoj import Spoj
 def main(ctx):
     pass
 
+@click.command()
+@click.pass_context
+def cmpile(ctx):
+    check,problem,language,filename=utils.get_info(os.getcwd())
+    if not check:
+        ctx.exit("Fix problems")
+    spoj = Spoj(problem,language,filename)
+    spoj.cmpile()
+    pass
+
 
 @click.command()
 @click.argument('problem',required=True)
@@ -33,27 +43,11 @@ def start(ctx,problem,language):
 
 
 @click.command()
-@click.argument('filename', required=True, type=click.File())
-@click.option('--problem', '-p', help='Problem code')
-@click.option('--language', '-l', help='Language of problem. \033[91mSee `spoj language`\033[0m',
-              type=click.Choice(map(str, sorted([lan[0] for lan in lang.LANG]))))
 @click.pass_context
-def submit(ctx, filename, problem, language):
-    if problem is None:
-        name = filename.name
-        name = name.split('/')[-1]
-        try:
-            name = name.split('.')[-2]
-        except Exception:
-            name = name.split('.')[-1]
-        problem = name.upper()
-    problem = problem.upper()
-    if language is None:
-        language = Config.get_language()
-    if language is None:
-        language = raw_input('Language (Integer): ')
-        if language not in map(str, [lan[0] for lan in lang.LANG]):
-            ctx.exit('Language not supported. Please check `spoj language`.')
+def submit(ctx):
+    check,problem,language,filename=utils.get_info(os.getcwd())
+    if not check:
+        ctx.exit("Fix problems")
     spoj = Spoj(problem,language,filename)
     submit_status, message = spoj.submit()
     if submit_status:
@@ -61,6 +55,7 @@ def submit(ctx, filename, problem, language):
         spoj.fetch_status()
     else:
         print message
+    pass
 
 
 @click.command()
@@ -115,3 +110,4 @@ main.add_command(config)
 main.add_command(language)
 main.add_command(status)
 main.add_command(start)
+main.add_command(cmpile)

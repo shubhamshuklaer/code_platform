@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 import json
 import time
 import sys
+from subprocess import call
 #  http://mattshaw.org/news/python-mechanize-gzip-response-handling/
 def ungzipResponse(r,b):
     headers = r.info()
@@ -34,6 +35,13 @@ class Spoj():
         self.language = language
         self.filename = filename
 
+    def cmpile(self):
+        cmd=config.get_cmp_cmd(self.language)
+        cmd=cmd.replace('inp_file',self.filename)
+        cmd=cmd.replace('out_file',self.problem)
+        click.echo(cmd)
+        os.system(cmd)
+
     def start(self):
         prob_dir=os.path.join(os.path.join(config.get_root(),'spoj'),self.problem)
 
@@ -48,6 +56,8 @@ class Spoj():
             info=ConfigParser.ConfigParser()
             info.add_section('info')
             info.set('info','lang_code',self.language)
+            info.set('info','prob_code',self.problem)
+            info.set('info','file_name',self.filename)
             with open(prob_info_file,'wb') as info_file:
                 info.write(info_file)
 
