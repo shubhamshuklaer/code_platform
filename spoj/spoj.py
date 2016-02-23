@@ -141,12 +141,15 @@ class Spoj():
             if final == '1':
                 print '\r\x1b[KResult: %s' % data['status_description'].strip()
                 print 'Memory: %s' % data['mem'].strip()
-                soup = BeautifulSoup(data['time'])
+                # Fixed no markup specified warning. If not specified it uses
+                # best for the system but it can then behave differently for
+                # different system
+                soup = BeautifulSoup(data['time'],"lxml")
                 time_taken = soup.get_text()
                 print 'Time: %s' % time_taken.strip()
                 break
             else:
-                soup = BeautifulSoup(data['status_description'])
+                soup = BeautifulSoup(data['status_description'],"lxml")
                 string = soup.get_text().strip()
                 string = string.replace('\t', '')
                 string = string.replace('\n', '')
