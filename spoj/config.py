@@ -21,7 +21,8 @@ def set_credentials(username,password):
 def set_language(language):
     config = ConfigParser.ConfigParser()
     config.read([utils.get_config_file()])
-    config.add_section('language')
+    if not config.has_section('language'):
+        config.add_section('language')
     config.set('language', 'code', language)
     config.set('language', 'name', lang.LANG_DICT[int(language)])
     with open(utils.get_config_file(), 'wb') as configfile:
