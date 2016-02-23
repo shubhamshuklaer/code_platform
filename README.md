@@ -7,6 +7,7 @@ A command line tool for SPOJ in python
 
 
 ## Installation
+You need to use python2 and sudo(Linux)
 
     $ python setup.py install
 
