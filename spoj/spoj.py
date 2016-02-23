@@ -36,11 +36,16 @@ class Spoj():
         self.filename = filename
 
     def cmpile(self):
+        os.system('git add --all')
         cmd=config.get_cmp_cmd(self.language)
         cmd=cmd.replace('inp_file',self.filename)
         cmd=cmd.replace('out_file',self.problem)
         click.echo(cmd)
-        os.system(cmd)
+        ret_val=os.system(cmd)
+        if ret_val == 0:
+            os.system('git commit -m "'+self.problem+' compile success"')
+        else:
+            os.system('git commit -m "'+self.problem+' compile failed"')
 
     def start(self):
         prob_dir=os.path.join(os.path.join(config.get_root(),'spoj'),self.problem)
