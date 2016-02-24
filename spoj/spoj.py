@@ -96,10 +96,9 @@ class Spoj():
                 info.write(info_file)
 
         if config.get_editor() is not None:
+            os.system('xdg-open '+urls.PROBLEM_URL+self.problem)
             os.chdir(prob_dir)
             os.system(config.get_editor()+" "+self.filename)
-            #  Popen([config.get_editor(),self.filename],cwd=prob_dir,shell=True,stdin=0,stdout=1,stderr=STDOUT)
-
 
     @staticmethod
     def login(username=None,password=None):
