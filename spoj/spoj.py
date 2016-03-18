@@ -26,14 +26,15 @@ class Spoj():
         self.language = language
         self.filename = filename
 
+    def num_inputs(self):
+            return len([f for f in os.listdir('.') if re.match(r'i_[0-9]+\.txt', f)])
     def add_input(self):
-        num_inputs = len([f for f in os.listdir('.') if re.match(r'i_[0-9]+\.txt', f)])
         # http://stackoverflow.com/questions/1320731/count-number-of-files-with-certain-extension-in-python
         #  num_inputs=len(glob.glob1(os.getcwd(),r'i_[0..9][0..9]*.txt'))
-        index=str(num_inputs+1)
+        index=str(num_inputs()+1)
         os.system(config.get_editor()+" i_"+index+".txt eo_"+index+".txt")
 
-    def cmpile(self):
+    def cmpile(self,should_commit=True):
         os.system('git add --all')
         cmd=config.get_cmp_cmd(self.language)
         cmd=cmd.replace('inp_file',self.filename)
@@ -44,11 +45,12 @@ class Spoj():
             status="success"
         else:
             status="failed"
-        os.system('git commit -m "%s compile %s"' %(self.problem,status))
+        if should_commit:
+            os.system('git commit -m "%s compile %s"' %(self.problem,status))
 
     def run(self,test_case_num,should_cmpile):
         if should_cmpile:
-            self.cmpile()
+            self.cmpile(False)
 
         os.system('git add --all')
         cmd=config.get_run_cmd(self.language)
@@ -59,24 +61,37 @@ class Spoj():
             ret_val=os.system(cmd)
             correct_output= raw_input("Did it gave correct output(Y/N) [Y]") or "Y"
             message=self.problem+' return code '+str(ret_val)+ ' correct output :'+correct_output
-        elif test_case_num == 0:
-            #Run all test cases
-            click.echo("TODO")
-            message("TODO")
+        elif test_case_num == "0":
+            success_list=[]
+            failure_list=[]
+            for i in range(1,self.num_inputs()+1):
+                if self.run_helper(cmd,str(i)):
+                    success_list.append(i)
+                else:
+                    failure_list.append(i)
+            message="Num_success:"+str(len(success_list))+"/"+str(self.num_inputs())+" Success list: "
+            message=message+str(success_list)+" Failure list: "+str(failure_list)
+
         else:
-            p=Popen(cmd,stdout=PIPE, stderr=PIPE, stdin=PIPE)
-            p.stdin.write(open("i_"+test_case_num+".txt").read())
-            expected_out=open("eo_"+test_case_num+".txt").read()
-            output=p.stdout.read()
-            open("o_"+test_case_num+".txt","w").write(output)
-            if output == expected_out:
+            success=self.run_helper(cmd,test_case_num)
+            if success:
                 message="Test case no. "+test_case_num+" ran with success"
-                click.echo("Success")
             else:
                 message="Test case no. "+test_case_num+" ran with failure"
-                click.echo("Failed")
-
         os.system('git commit -m " %s "' % (message))
+
+    def run_helper(self,cmd,test_case_num):
+        p=Popen(cmd,stdout=PIPE, stderr=PIPE, stdin=PIPE)
+        p.stdin.write(open("i_"+test_case_num+".txt").read())
+        expected_out=open("eo_"+test_case_num+".txt").read()
+        output=p.stdout.read()
+        open("o_"+test_case_num+".txt","w").write(output)
+        if output == expected_out:
+            click.echo("Test case num : "+test_case_num+" Success")
+            return True
+        else:
+            click.echo("Test case num : "+test_case_num+" Failed")
+            return False
 
     def start(self):
         prob_dir=os.path.join(os.path.join(config.get_root(),'spoj'),self.problem)
