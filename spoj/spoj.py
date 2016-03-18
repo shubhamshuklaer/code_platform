@@ -15,6 +15,8 @@ from bs4 import BeautifulSoup
 import json
 import time
 import sys
+#  import glob
+import re
 from subprocess import Popen,PIPE,STDOUT
 
 class Spoj():
@@ -23,6 +25,13 @@ class Spoj():
         self.problem = problem
         self.language = language
         self.filename = filename
+
+    def add_input(self):
+        num_inputs = len([f for f in os.listdir('.') if re.match(r'i_[0-9]+\.txt', f)])
+        # http://stackoverflow.com/questions/1320731/count-number-of-files-with-certain-extension-in-python
+        #  num_inputs=len(glob.glob1(os.getcwd(),r'i_[0..9][0..9]*.txt'))
+        index=str(num_inputs+1)
+        os.system(config.get_editor()+" i_"+index+".txt eo_"+index+".txt")
 
     def cmpile(self):
         os.system('git add --all')

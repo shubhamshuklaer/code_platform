@@ -15,6 +15,16 @@ def main(ctx):
 
 @click.command()
 @click.pass_context
+def add_input(ctx):
+    check,problem,language,filename=utils.get_info(os.getcwd())
+    if not check:
+        ctx.exit("Fix problems")
+    spoj = Spoj(problem,language,filename)
+    spoj.add_input()
+    pass
+
+@click.command()
+@click.pass_context
 def cmpile(ctx):
     check,problem,language,filename=utils.get_info(os.getcwd())
     if not check:
@@ -123,3 +133,4 @@ main.add_command(status)
 main.add_command(start)
 main.add_command(cmpile)
 main.add_command(run)
+main.add_command(add_input)
