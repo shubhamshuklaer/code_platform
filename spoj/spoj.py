@@ -16,17 +16,6 @@ import json
 import time
 import sys
 from subprocess import Popen,PIPE,STDOUT
-#  http://mattshaw.org/news/python-mechanize-gzip-response-handling/
-def ungzipResponse(r,b):
-    headers = r.info()
-    if headers['Content-Encoding']=='gzip':
-        import gzip
-        gz = gzip.GzipFile(fileobj=r, mode='rb')
-        html = gz.read()
-        gz.close()
-        headers["Content-type"] = "text/html; charset=utf-8"
-        r.set_data( html )
-        b.set_response(r)
 
 class Spoj():
 
@@ -101,49 +90,6 @@ class Spoj():
             os.chdir(prob_dir)
             os.system(config.get_editor()+" "+self.filename)
 
-    @staticmethod
-    def login(username=None,password=None):
-        if username is None:
-            username, password = config.get_credentials()
-            if username is None:
-                username, password = utils.ask_credentials()
-
-        br = mechanize.Browser(factory=mechanize.RobustFactory())
-        br.set_handle_robots(False)
-        br.addheaders.append( ['Accept-Encoding','gzip'] )
-
-        try:
-            r=br.open(urls.BASE_URL)
-            ungzipResponse(r,br)
-
-            found=False
-            for form in br.forms():
-                if form.attrs['id'] == 'login-form':
-                    br.form = form
-                    found=True
-                    break
-
-            if found == False:
-                click.echo("Couldn't find login form")
-                return None
-
-            br['login_user'] = username
-            br['password'] = password
-
-            r=br.submit()
-            ungzipResponse(r,br)
-
-            for link in br.links():
-                if 'My profile' in link.text:
-                    click.echo('Login Success')
-                    return br
-
-            click.echo('Wrong Username/Password. Try Again')
-            return None
-        except mechanize.URLError:
-            click.echo('Error in connecting to internet. Please check your internet connection')
-            return None
-
 
 
     # Using gzip for faster encoding of page
@@ -154,13 +100,13 @@ class Spoj():
         with open(self.filename, 'r') as codefile:
             solution = codefile.read()
 
-        br=Spoj.login()
+        br=utils.login()
 
         if br == None:
             return False, 'Login failed'
 
         r=br.open(urls.SUBMIT_URL)
-        ungzipResponse(r,br)
+        utils.ungzip_response(r,br)
         # br.response().read() will return the html text
         #  click.echo(br.response().read())
 
@@ -171,7 +117,7 @@ class Spoj():
         br['file'] = solution
         br['lang'] = [self.language]
         r=br.submit()
-        ungzipResponse(r,br)
+        utils.ungzip_response(r,br)
         response = br.response().read()
         wrong_code = re.search(r'wrong\s+problem', response, re.IGNORECASE)
         if wrong_code:
@@ -185,14 +131,6 @@ class Spoj():
             return False, 'Not submitted, some error occurred'
 
         #s.stop()
-
-    @staticmethod
-    def verify_credentials(username,password):
-        if Spoj.login(username,password) == None:
-            return False
-        else:
-            return True
-
 
 
     def fetch_status(self):

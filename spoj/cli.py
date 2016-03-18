@@ -73,45 +73,35 @@ def submit(ctx):
 
 
 @click.command()
-@click.option('--language', '-l', help='Choose Default Language. \033[91mSee `spoj language`\033[0m',
-              type=click.Choice(map(str, sorted([lan[0] for lan in lang.LANG]))))
+@click.option('--language', '-l', help='Choose Default Language',
+              is_flag=True)
 @click.option('--credential', '-c', is_flag=True)
-@click.option('--root','-r', help='Choose root directory for storing code')
+@click.option('--root','-r', help='Choose root directory for storing code',is_flag=True)
 @click.option('--extension','-e',help='Give extention for a file type',is_flag=True)
 @click.option('--cmp_cmd',help='Give compile command, inp_file and out_file are placeholders',is_flag=True)
 @click.option('--run_cmd',help='Give run command, inp_file and out_file are placeholders',is_flag=True)
-@click.option('--editor')
+@click.option('--editor',help="Specify editor",is_flag=True)
+@click.option('--config_all',help="Configure all options",is_flag=True)
 @click.pass_context
-def config(ctx, language, credential,root,extension,cmp_cmd,run_cmd,editor):
-    if credential:
-        username, password = utils.ask_credentials()
-        click.echo('Verifying Credentials...Please wait')
-        creds = Spoj.verify_credentials(username, password)
-        if not creds:
+def config(ctx, language, credential,root,extension,cmp_cmd,run_cmd,editor,config_all):
+    tmp_lang=None
+    if credential or config_all:
+        if not utils.config_set_credentials():
             ctx.exit()
-        Config.set_credentials(username, password)
-    if language is not None:
-        Config.set_language(language)
-    if root is not None:
-        if os.path.exists(root):
-            Config.set_root(root)
-            if not os.path.exists(os.path.join(root,'.git')):
-                Popen(['git','init'],cwd=root)
-            if not os.path.exists(os.path.join(root,'spoj')):
-                os.mkdir(os.path.join(root,'spoj'))
-        else:
-            click.echo('dir does not exist')
-    if extension:
-        lang_code,extension= utils.ask_extension()
-        Config.set_extension(lang_code,extension)
-    if cmp_cmd:
-        lang_code,cmp_cmd=utils.ask_cmp_cmd()
-        Config.set_cmp_cmd(lang_code,cmp_cmd)
-    if run_cmd:
-        lang_code,run_cmd=utils.ask_run_cmd()
-        Config.set_run_cmd(lang_code,run_cmd)
-    if editor is not None:
-        Config.set_editor(editor)
+    if language or config_all:
+        tmp_lang=utils.config_set_language()
+        if tmp_lang is None:
+            ctx.exit()
+    if root or config_all:
+        utils.config_set_root()
+    if extension or config_all:
+        utils.config_set_extension(tmp_lang)
+    if cmp_cmd or config_all:
+        utils.config_set_cmp_cmd(tmp_lang)
+    if run_cmd or config_all:
+        utils.config_set_run_cmd(tmp_lang)
+    if editor or config_all:
+        utils.config_set_editor()
     pass
 
 

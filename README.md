@@ -21,15 +21,15 @@ You need to use python2 and sudo(Linux)
 * Help
     * `spoj --help`
     * for help regarding a specific option like "config" use `spoj config --help`
+* You can follow points given below to seperately configure it, or you can run
+`spoj config --config_all` to configure everything at once.
 * Create root for storing code
-    * `mkdir path_to_chosen_root`
-    * `spoj config -r path_to_chosen_root`
+    * `spoj config -r`
+    * You will be asked to put `path_to_chosen_root`
 * Setup credentials for spoj `spoj config -c`
 * Setup extensions for languages for eg. "cpp" for c++
     * `spoj config -e`
-    * You can get the language code from `spoj/lang.py`
-    * Ignore the dot while giving extension
-* Setup the editor to use. `spoj config --editor editor_name`
+* Setup the editor to use. `spoj config --editor`. You will be asked to enter editor
 * Setup compile command for a particular language
     * `spoj config --cmp_cmd`
     * for eg `g++ inp_file -o out_file`
@@ -38,7 +38,7 @@ You need to use python2 and sudo(Linux)
 * Setup run command for a particular language
     * `spoj config --run_cmd`
     * for eg `./out_file`
-* Setup default language(optional) `spoj config -l 1`. here 1 is language code for c++ 5.1
+* Setup default language(optional) `spoj config -l`. You will be asked to enter the language code.
 * Start a project. Eg `spoj start GSS1`. GSS1 is a problem code on spoj. The editor will open up.
 * Compiling/testing/submitting - Commands must be executed from inside the
 project folder eg `path_to_chosen_root/spoj/GSS1`
