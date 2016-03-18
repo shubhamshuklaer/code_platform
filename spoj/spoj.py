@@ -55,8 +55,9 @@ class Spoj():
         cmd=cmd.replace('out_file',self.problem)
         click.echo(cmd)
         if test_case_num is None:
-            ret_val=Popen(cmd)
-            message=self.problem+' return code '+ret_val
+            ret_val=os.system(cmd)
+            correct_output= raw_input("Did it gave correct output(Y/N) [Y]") or "Y"
+            message=self.problem+' return code '+str(ret_val)+ ' correct output :'+correct_output
         elif test_case_num == 0:
             #Run all test cases
             click.echo("TODO")

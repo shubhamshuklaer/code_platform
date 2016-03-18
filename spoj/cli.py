@@ -24,9 +24,9 @@ def cmpile(ctx):
     pass
 
 @click.command()
-@click.argument('test_case_num',required=True)
+@click.argument('test_case_num',required=False)
 @click.pass_context
-def run(ctx,test_case_num):
+def run(ctx,test_case_num=None):
     check,problem,language,filename=utils.get_info(os.getcwd())
     if not check:
         ctx.exit("Fix problems")
