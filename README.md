@@ -9,8 +9,8 @@ A command line tool for SPOJ in python
 ## Installation
 You need to use python2 and sudo(Linux)
 
-    $ sudo python2 setup.py install
     $ sudo pip2 install -r requirements.txt
+    $ sudo python2 setup.py install
 
 <!-- ## Documentation -->
 
@@ -22,7 +22,7 @@ You need to use python2 and sudo(Linux)
     * for help regarding a specific option like "config" use `spoj config --help`
 * Create root for storing code
     * `mkdir path_to_chosen_root`
-    * `spoj -r path_to_chosen_root`
+    * `spoj config -r path_to_chosen_root`
 * Setup credentials for spoj `spoj config -c`
 * Setup extensions for languages for eg. "cpp" for c++
     * `spoj config -e`
