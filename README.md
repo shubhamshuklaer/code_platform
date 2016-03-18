@@ -10,6 +10,7 @@ A command line tool for SPOJ in python
 You need to use python2 and sudo(Linux)
 
     $ sudo python2 setup.py install
+    $ sudo pip2 install -r requirements.txt
 
 <!-- ## Documentation -->
 
