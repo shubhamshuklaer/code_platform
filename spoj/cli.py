@@ -1,9 +1,9 @@
 import os
 import click
-import lang
-import utils
+from .lang import LANG
+from .utils import utils
 from subprocess import Popen
-import config as Config
+from .config import config as Config
 from spoj import Spoj
 
 
@@ -65,10 +65,10 @@ def submit(ctx):
     spoj = Spoj(problem,language,filename)
     submit_status, message = spoj.submit()
     if submit_status:
-        print message
+        print(message)
         spoj.fetch_status()
     else:
-        print message
+        print(message)
     pass
 
 
@@ -76,7 +76,7 @@ def submit(ctx):
 @click.option('--language', '-l', help='Choose Default Language. \033[91mSee `spoj language`\033[0m',
               type=click.Choice(map(str, sorted([lan[0] for lan in lang.LANG]))))
 @click.option('--credential', '-c', is_flag=True)
-@click.option('--root','-r', help='Choose root directory for storing code')
+@click.option('--root','-r', help='Choose a root directory for storing code')
 @click.option('--extension','-e',help='Give extention for a file type',is_flag=True)
 @click.option('--cmp_cmd',help='Give compile command, inp_file and out_file are placeholders',is_flag=True)
 @click.option('--run_cmd',help='Give run command, inp_file and out_file are placeholders',is_flag=True)

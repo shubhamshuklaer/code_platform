@@ -2,10 +2,10 @@ __author__ = 'dheerendra'
 
 import os
 import mechanize
-import utils
-import urls
+from .utils import utils
+from .urls import urls
 import click
-import config
+from .config import config
 import ConfigParser
 import re
 from urllib import urlencode
@@ -205,14 +205,14 @@ class Spoj():
             data = data[0]
             final = data['final']
             if final == '1':
-                print '\r\x1b[KResult: %s' % data['status_description'].strip()
-                print 'Memory: %s' % data['mem'].strip()
+                print('\r\x1b[KResult: %s' % data['status_description'].strip())
+                print('Memory: %s' % data['mem'].strip())
                 # Fixed no markup specified warning. If not specified it uses
                 # best for the system but it can then behave differently for
                 # different system
                 soup = BeautifulSoup(data['time'],"lxml")
                 time_taken = soup.get_text()
-                print 'Time: %s' % time_taken.strip()
+                print('Time: %s' % time_taken.strip())
                 break
             else:
                 soup = BeautifulSoup(data['status_description'],"lxml")
