@@ -35,13 +35,14 @@ def cmpile(ctx):
 
 @click.command()
 @click.argument('test_case_num',required=False)
+@click.option('should_cmpile','-c',help="Flag denoting should we compile",is_flag=True)
 @click.pass_context
-def run(ctx,test_case_num=None):
+def run(ctx,test_case_num=None,should_cmpile=False):
     check,problem,language,filename=utils.get_info(os.getcwd())
     if not check:
         ctx.exit("Fix problems")
     spoj = Spoj(problem,language,filename)
-    spoj.run(test_case_num)
+    spoj.run(test_case_num,should_cmpile)
     pass
 
 

@@ -42,9 +42,11 @@ You need to use python2 and sudo(Linux)
 * Start a project. Eg `spoj start GSS1`. GSS1 is a problem code on spoj. The editor will open up.
 * Compiling/testing/submitting - Commands must be executed from inside the
 project folder eg `path_to_chosen_root/spoj/GSS1`
-    * spoj cmpile
+    * `spoj cmpile`
     * Giving test case manually: `spoj run`
     * Giving test case from a file:
-        * Create file `i_<test_case_num>.txt` and `eo_<test_case_num>.txt` and fill the input and expected output respectively. Here <test_case_num> is just a number identifying the test.
+        * `spoj add_input`. 2 files of form `i_<test_case_num>.txt` and `eo_<test_case_num>.txt` will be opened, fill the input and expected output respectively. Here <test_case_num> is just a number identifying the test.
+        * if we pass a `-c` option with `spoj run` it will compile and then run.
         * `spoj run <test_case_num>`
+        * if we give `<test_case_num>` as 0 then all test cases will be executed
 * Submiting `spoj submit`

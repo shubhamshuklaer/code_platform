@@ -46,7 +46,10 @@ class Spoj():
             status="failed"
         os.system('git commit -m "%s compile %s"' %(self.problem,status))
 
-    def run(self,test_case_num):
+    def run(self,test_case_num,should_cmpile):
+        if should_cmpile:
+            self.cmpile()
+
         os.system('git add --all')
         cmd=config.get_run_cmd(self.language)
         cmd=cmd.replace('inp_file',self.filename)
