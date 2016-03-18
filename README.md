@@ -3,8 +3,9 @@
 <!-- [![Downloads](https://pypip.in/download/python_spoj/badge.svg)](https://pypi.python.org/pypi/python_spoj/) -->
 <!-- [![Latest Version](https://pypip.in/version/python_spoj/badge.svg)](https://pypi.python.org/pypi/python_spoj/) -->
 <!-- [![Documentation Status](https://readthedocs.org/projects/python-spoj/badge/?version=latest)](https://readthedocs.org/projects/python-spoj/?badge=latest)   -->
-A command line tool for SPOJ in python
+A platform for writing code for spoj
 
+Built on top of [Python-Spoj repo(DheerendraRathor)](https://github.com/DheerendraRathor/Python-Spoj)
 
 ## Installation
 You need to use python2 and sudo(Linux)
