@@ -12,10 +12,15 @@ import config
 import urls
 import readline
 from subprocess import Popen
+from bs4 import BeautifulSoup
+import re
+import pickle
+
 
 APP_NAME = 'PYTHON_SPOJ'
 CONFIG = 'config'
 COOKIE = 'cookie'
+PROBLEM_DATABASE_NAME='problem_database'
 
 def get_add_dir():
     app_dir = click.get_app_dir(APP_NAME)
@@ -114,6 +119,10 @@ def ungzip_response(r,b):
         headers["Content-type"] = "text/html; charset=utf-8"
         r.set_data( html )
         b.set_response(r)
+
+def get_response(br,url):
+    ungzip_response(br.open(url),br)
+    return br.response()
 
 def login(username=None,password=None):
     if username is None:
@@ -251,3 +260,102 @@ def config_set_run_cmd(lang_code):
 
 def config_set_editor():
     config.set_editor(raw_input('Enter editor: ') or "")
+
+def print_problem_data(pd):
+    # http://stackoverflow.com/questions/10623727/python-spacing-and-aligning-strings
+    output="{0:5} {1:6} {2:50} {3:5} {4:5} {5:8} {6:6} {7:6} {8:6}".format(pd["solved"],pd["id"],pd["title"],pd["up_votes"],pd["down_votes"],pd["users"],pd["accuracy"],pd["implementation_diffi"],pd["conceptual_diffi"])
+    print(output)
+
+def print_problem_database():
+    problem_database=get_problem_database()
+    # http://stackoverflow.com/questions/5466618/too-many-values-to-unpack-iterating-over-a-dict-key-string-value-list
+    for key,val in problem_database.iteritems():
+        print_problem_data(val)
+
+def fix_string(string):
+    # \xa0 is actually non-breaking space in Latin1 (ISO 8859-1), also
+    # chr(160). You should replace it with a space. string =
+    # string.replace(u'\xa0', u' ')
+    # str will convert unicode to normal string
+    # http://stackoverflow.com/questions/24358361/removing-u2018-and-u2019-character
+    #  return str(string.replace(u'\xa0', u' ').replace(u"\u2018", "'").replace(u"\u2019", "'").strip())
+    return str(string.encode("ascii","ignore")).strip()
+
+def set_problem_database(problem_database):
+    app_dir = get_add_dir()
+    problem_database_file = os.path.join(app_dir, PROBLEM_DATABASE_NAME)
+    with open(problem_database_file,"w") as f:
+        pickle.dump(problem_database,f)
+
+def get_problem_database():
+    app_dir = get_add_dir()
+    problem_database_file = os.path.join(app_dir, PROBLEM_DATABASE_NAME)
+    if os.path.exists(problem_database_file):
+        with open(problem_database_file,"r") as f:
+            return pickle.load(f)
+    else:
+        click.echo("Update problem database first")
+        return None
+
+
+
+def process_tr(problem_database,tr):
+    problem_data=dict()
+    tds=tr.find_all("td")
+    problem_data["solved"]= "fa-check" in tds[0].find("span")["class"]
+    problem_data["id"]=fix_string(tds[1].get_text())
+    problem_data["code"]=fix_string(tds[2].find("a",{"href": re.compile(".*problems.*")})["href"]).rsplit('/', 1)[-1]
+    problem_data["title"]=fix_string(tds[2].get_text())
+    up_down_span=tds[3].find("span")
+    up_votes=0
+    down_votes=0
+    if up_down_span != None:
+        up_down_str=fix_string(up_down_span["title"])
+        result=re.match("\+([0-9]+)\s+\-([0-9]+)",up_down_str)
+        up_votes=int(result.group(1))
+        down_votes=int(result.group(2))
+
+    problem_data["up_votes"]=up_votes
+    problem_data["down_votes"]=down_votes
+
+    problem_data["users"]=fix_string(tds[4].get_text())
+    problem_data["accuracy"]=fix_string(tds[5].get_text())
+    difficulty_divs=tds[6].find_all("div",class_="progress-bar")
+
+    # Heighest default difficulty
+    problem_data["implementation_diffi"]=1
+    problem_data["conceptual_diffi"]=1
+
+    if len(difficulty_divs)>=1:
+        problem_data["implementation_diffi"]=float(difficulty_divs[0]["aria-valuenow"])/float(difficulty_divs[0]["aria-valuemax"])
+    if len(difficulty_divs)>=2:
+        problem_data["conceptual_diffi"]=float(difficulty_divs[1]["aria-valuenow"])/float(difficulty_divs[1]["aria-valuemax"])
+    if problem_data["id"] not in problem_database:
+        print_problem_data(problem_data)
+        problem_database[problem_data["id"]]=problem_data
+
+def update_problem_database():
+    br=login()
+    if br == None:
+        click.echo("Could not login")
+        return
+
+    problem_database=dict()
+    done=False
+    while not done:
+        prev_len=len(problem_database)
+        r=get_response(br,urls.PROBLEM_DATABASE+"start="+str(prev_len))
+        s=BeautifulSoup(r,"lxml")
+        problem_table=s.find("table",class_="problems")
+        if problem_table == None or problem_table.find("tbody") == None:
+            click.echo("Problem couldn't find table")
+            return
+
+        problem_tbody=problem_table.find("tbody")
+        for tr in problem_tbody.find_all("tr"):
+            process_tr(problem_database,tr)
+
+        if len(problem_database)==prev_len:
+            done=True
+
+    set_problem_database(problem_database)

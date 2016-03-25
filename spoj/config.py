@@ -4,7 +4,6 @@ import ConfigParser
 import utils
 import lang
 
-
 def set_credentials(username,password):
     config = ConfigParser.ConfigParser()
     config.read([utils.get_config_file()])

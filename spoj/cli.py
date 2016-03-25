@@ -69,6 +69,12 @@ def start(ctx,problem,language):
 
 @click.command()
 @click.pass_context
+def update_problem_database(ctx):
+    utils.update_problem_database()
+
+
+@click.command()
+@click.pass_context
 def submit(ctx):
     check,problem,language,filename=utils.get_info(os.getcwd())
     if not check:
@@ -135,3 +141,4 @@ main.add_command(start)
 main.add_command(cmpile)
 main.add_command(run)
 main.add_command(add_input)
+main.add_command(update_problem_database)
