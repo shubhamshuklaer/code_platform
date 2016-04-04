@@ -304,7 +304,7 @@ def process_tr(problem_database,tr):
     tds=tr.find_all("td")
     problem_data["solved"]= "fa-check" in tds[0].find("span")["class"]
     problem_data["id"]=fix_string(tds[1].get_text())
-    problem_data["code"]=fix_string(tds[2].find("a",{"href": re.compile(".*problems.*")})["href"]).rsplit('/', 1)[-1]
+    problem_data["prob_code"]=fix_string(tds[2].find("a",{"href": re.compile(".*problems.*")})["href"]).rsplit('/', 1)[-1]
     problem_data["title"]=fix_string(tds[2].get_text())
     up_down_span=tds[3].find("span")
     up_votes=0
@@ -330,9 +330,9 @@ def process_tr(problem_database,tr):
         problem_data["implementation_diffi"]=float(difficulty_divs[0]["aria-valuenow"])/float(difficulty_divs[0]["aria-valuemax"])
     if len(difficulty_divs)>=2:
         problem_data["conceptual_diffi"]=float(difficulty_divs[1]["aria-valuenow"])/float(difficulty_divs[1]["aria-valuemax"])
-    if problem_data["id"] not in problem_database:
+    if problem_data["prob_code"] not in problem_database:
         print_problem_data(problem_data)
-        problem_database[problem_data["id"]]=problem_data
+        problem_database[problem_data["prob_code"]]=problem_data
 
 def update_problem_database():
     br=login()
