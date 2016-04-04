@@ -21,6 +21,7 @@ APP_NAME = 'PYTHON_SPOJ'
 CONFIG = 'config'
 COOKIE = 'cookie'
 PROBLEM_DATABASE_NAME='problem_database'
+TAGS_DATABASE_NAME='tags_database'
 
 def get_add_dir():
     app_dir = click.get_app_dir(APP_NAME)
@@ -261,16 +262,6 @@ def config_set_run_cmd(lang_code):
 def config_set_editor():
     config.set_editor(raw_input('Enter editor: ') or "")
 
-def print_problem_data(pd):
-    # http://stackoverflow.com/questions/10623727/python-spacing-and-aligning-strings
-    output="{0:5} {1:6} {2:50} {3:5} {4:5} {5:8} {6:6} {7:6} {8:6}".format(pd["solved"],pd["id"],pd["title"],pd["up_votes"],pd["down_votes"],pd["users"],pd["accuracy"],pd["implementation_diffi"],pd["conceptual_diffi"])
-    print(output)
-
-def print_problem_database():
-    problem_database=get_problem_database()
-    # http://stackoverflow.com/questions/5466618/too-many-values-to-unpack-iterating-over-a-dict-key-string-value-list
-    for key,val in problem_database.iteritems():
-        print_problem_data(val)
 
 def fix_string(string):
     # \xa0 is actually non-breaking space in Latin1 (ISO 8859-1), also
@@ -297,7 +288,64 @@ def get_problem_database():
         click.echo("Update problem database first")
         return None
 
+def set_tags_database(tags_database):
+    app_dir = get_add_dir()
+    tags_database_file = os.path.join(app_dir, TAGS_DATABASE_NAME)
+    with open(tags_database_file,"w") as f:
+        pickle.dump(tags_database,f)
 
+def get_tags_database():
+    app_dir = get_add_dir()
+    tags_database_file = os.path.join(app_dir, TAGS_DATABASE_NAME)
+    if os.path.exists(tags_database_file):
+        with open(tags_database_file,"r") as f:
+            return pickle.load(f)
+    else:
+        click.echo("Update tags_database first")
+        return None
+
+def print_problem_data(pd):
+    # http://stackoverflow.com/questions/10623727/python-spacing-and-aligning-strings
+    output="{0:5} {1:6} {2:50} {3:5} {4:5} {5:8} {6:6} {7:6} {8:6} {9:}".format(pd["solved"],pd["id"],pd["title"],pd["up_votes"],pd["down_votes"],pd["users"],pd["accuracy"],pd["implementation_diffi"],pd["conceptual_diffi"],pd["tags"])
+    print(output)
+
+def print_problem_database():
+    problem_database=get_problem_database()
+    # http://stackoverflow.com/questions/5466618/too-many-values-to-unpack-iterating-over-a-dict-key-string-value-list
+    for key,val in problem_database.iteritems():
+        print_problem_data(val)
+
+def print_tags_database():
+    tags_database=get_tags_database()
+    for key,val in tags_database.iteritems():
+        print(key+" : "+str(val))
+
+
+def update_tags_database(problem_database,br):
+    print("updating tags database")
+    tags_database=dict()
+    s=BeautifulSoup(get_response(br,urls.TAGS_DATABASE_URL),"lxml")
+    tbody=s.find('table').find('tbody')
+    for tr in tbody.find_all('tr'):
+        tag_url=tr.find('a')['href']
+        tag_name=fix_string(tr.find('a').get_text())
+        tags_database[tag_name]=[]
+        tbody_tag=BeautifulSoup(get_response(br,urls.BASE_URL+tag_url),"lxml").find("table",class_="problems").find('tbody')
+        for tr_tag in tbody_tag.find_all('tr'):
+            tds=tr_tag.find_all("td")
+            prob_code=fix_string(tds[2].find("a",{"href": re.compile(".*problems.*")})["href"]).rsplit('/', 1)[-1]
+            if prob_code in problem_database:
+                # We are only getting problems from
+                # http://www.spoj.com/problems/classical/
+                tags_database[tag_name].append(prob_code)
+                problem_database[prob_code]["tags"].append(tag_name)
+
+        sys.stdout.write('\rTags database Len : '+str(len(tags_database)))
+        sys.stdout.flush()
+    sys.stdout.write('\r\n')
+    sys.stdout.flush()
+
+    set_tags_database(tags_database)
 
 def process_tr(problem_database,tr):
     problem_data=dict()
@@ -326,12 +374,14 @@ def process_tr(problem_database,tr):
     problem_data["implementation_diffi"]=1
     problem_data["conceptual_diffi"]=1
 
+    problem_data["tags"]=[]
+
     if len(difficulty_divs)>=1:
         problem_data["implementation_diffi"]=float(difficulty_divs[0]["aria-valuenow"])/float(difficulty_divs[0]["aria-valuemax"])
     if len(difficulty_divs)>=2:
         problem_data["conceptual_diffi"]=float(difficulty_divs[1]["aria-valuenow"])/float(difficulty_divs[1]["aria-valuemax"])
     if problem_data["prob_code"] not in problem_database:
-        print_problem_data(problem_data)
+        #  print_problem_data(problem_data)
         problem_database[problem_data["prob_code"]]=problem_data
 
 def update_problem_database():
@@ -344,7 +394,7 @@ def update_problem_database():
     done=False
     while not done:
         prev_len=len(problem_database)
-        r=get_response(br,urls.PROBLEM_DATABASE+"start="+str(prev_len))
+        r=get_response(br,urls.PROBLEM_DATABASE_URL+"start="+str(prev_len))
         s=BeautifulSoup(r,"lxml")
         problem_table=s.find("table",class_="problems")
         if problem_table == None or problem_table.find("tbody") == None:
@@ -357,5 +407,13 @@ def update_problem_database():
 
         if len(problem_database)==prev_len:
             done=True
+        sys.stdout.write('\rProblem database Len : '+str(len(problem_database)))
+        sys.stdout.flush()
 
+    sys.stdout.write('\r\n')
+    sys.stdout.flush()
+
+    update_tags_database(problem_database,br)
     set_problem_database(problem_database)
+    print_problem_database()
+    print_tags_database()
