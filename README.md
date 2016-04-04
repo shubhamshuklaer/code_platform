@@ -21,6 +21,8 @@ You need to use python2 and sudo(Linux)
 * Help
     * `spoj --help`
     * for help regarding a specific option like "config" use `spoj config --help`
+* For autocompletion of arguments do `source /path/to/spoj_autocomplete.sh`.
+Present inside the `spoj` dir.
 * You can follow points given below to seperately configure it, or you can run
 `spoj config --config_all` to configure everything at once.
 * Create root for storing code

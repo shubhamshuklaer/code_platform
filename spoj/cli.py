@@ -5,7 +5,10 @@ import utils
 from subprocess import Popen
 import config as Config
 from spoj import Spoj
-
+# http://click.pocoo.org/5/bashcomplete/
+# Bash autocomplete
+# _SPOJ_COMPLETE=source spoj > spoj-autocomplete.sh
+# source /path/to/spoj-autocomplete.sh in bashrc
 
 @click.group()
 @click.version_option()
