@@ -25,13 +25,16 @@ class Spoj():
         self.problem = problem
         self.language = language
         self.filename = filename
+        self.prob_dir=os.path.join(os.path.join(config.get_root(),'spoj'),self.problem)
+        os.chdir(self.prob_dir)
 
     def num_inputs(self):
             return len([f for f in os.listdir('.') if re.match(r'i_[0-9]+\.txt', f)])
+
     def add_input(self):
         # http://stackoverflow.com/questions/1320731/count-number-of-files-with-certain-extension-in-python
         #  num_inputs=len(glob.glob1(os.getcwd(),r'i_[0..9][0..9]*.txt'))
-        index=str(num_inputs()+1)
+        index=str(self.num_inputs()+1)
         os.system(config.get_editor()+" i_"+index+".txt eo_"+index+".txt")
 
     def cmpile(self,should_commit=True):

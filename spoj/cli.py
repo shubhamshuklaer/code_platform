@@ -16,38 +16,62 @@ from spoj import Spoj
 def main(ctx):
     pass
 
+def get_info(prob_code):
+    if prob_code != None:
+        prob_dir=os.path.join(os.path.join(Config.get_root(),'spoj'),prob_code)
+    else:
+        prob_dir=os.getcwd()
+    return utils.get_info(prob_dir)
+
+
 @click.command()
+@click.option('prob_code','-p',help="prob code")
 @click.pass_context
-def add_input(ctx):
-    check,problem,language,filename=utils.get_info(os.getcwd())
+def add_input(ctx,prob_code=None):
+    check,problem,language,filename=get_info(prob_code)
     if not check:
         ctx.exit("Fix problems")
     spoj = Spoj(problem,language,filename)
     spoj.add_input()
-    pass
 
 @click.command()
+@click.option('prob_code','-p',help="prob code")
 @click.pass_context
-def cmpile(ctx):
-    check,problem,language,filename=utils.get_info(os.getcwd())
+def cmpile(ctx,prob_code=None):
+    check,problem,language,filename=get_info(prob_code)
     if not check:
         ctx.exit("Fix problems")
     spoj = Spoj(problem,language,filename)
     spoj.cmpile()
-    pass
 
 @click.command()
 @click.argument('test_case_num',required=False)
+@click.option('prob_code','-p',help="prob code")
 @click.option('should_cmpile','-c',help="Flag denoting should we compile",is_flag=True)
 @click.pass_context
-def run(ctx,test_case_num=None,should_cmpile=False):
-    check,problem,language,filename=utils.get_info(os.getcwd())
+def run(ctx,test_case_num=None,prob_code=None,should_cmpile=False):
+    check,problem,language,filename=get_info(prob_code)
     if not check:
         ctx.exit("Fix problems")
     spoj = Spoj(problem,language,filename)
     spoj.run(test_case_num,should_cmpile)
-    pass
 
+
+
+@click.command()
+@click.option('prob_code','-p',help="prob code")
+@click.pass_context
+def submit(ctx,prob_code=None):
+    check,problem,language,filename=get_info(prob_code)
+    if not check:
+        ctx.exit("Fix problems")
+    spoj = Spoj(problem,language,filename)
+    submit_status, message = spoj.submit()
+    if submit_status:
+        print message
+        spoj.fetch_status()
+    else:
+        print message
 
 
 @click.command()
@@ -67,7 +91,6 @@ def start(ctx,problem,language):
         ctx.exit("Please set run_cmd for lang "+language)
     spoj=Spoj(problem,language,problem+"."+Config.get_extension(language))
     spoj.start()
-    pass
 
 
 @click.command()
@@ -75,21 +98,6 @@ def start(ctx,problem,language):
 def update_problem_database(ctx):
     utils.update_problem_database()
 
-
-@click.command()
-@click.pass_context
-def submit(ctx):
-    check,problem,language,filename=utils.get_info(os.getcwd())
-    if not check:
-        ctx.exit("Fix problems")
-    spoj = Spoj(problem,language,filename)
-    submit_status, message = spoj.submit()
-    if submit_status:
-        print message
-        spoj.fetch_status()
-    else:
-        print message
-    pass
 
 
 @click.command()
@@ -122,7 +130,6 @@ def config(ctx, language, credential,root,extension,cmp_cmd,run_cmd,editor,confi
         utils.config_set_run_cmd(tmp_lang)
     if editor or config_all:
         utils.config_set_editor()
-    pass
 
 
 @click.command()
