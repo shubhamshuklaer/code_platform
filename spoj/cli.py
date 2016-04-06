@@ -16,12 +16,19 @@ from spoj import Spoj
 def main(ctx):
     pass
 
+
 def get_info(prob_code):
     if prob_code != None:
         prob_dir=os.path.join(os.path.join(Config.get_root(),'spoj'),prob_code)
     else:
         prob_dir=os.getcwd()
     return utils.get_info(prob_dir)
+
+
+@click.command()
+@click.pass_context
+def get_root(ctx):
+    click.echo(Config.get_root())
 
 
 @click.command()
@@ -152,3 +159,4 @@ main.add_command(cmpile)
 main.add_command(run)
 main.add_command(add_input)
 main.add_command(update_problem_database)
+main.add_command(get_root)
