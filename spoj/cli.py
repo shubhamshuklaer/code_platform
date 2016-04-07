@@ -33,13 +33,14 @@ def get_root(ctx):
 
 @click.command()
 @click.option('prob_code','-p',help="prob code")
+@click.option('no_open_editor','-n',help="Don't open editor",is_flag=True)
 @click.pass_context
-def add_input(ctx,prob_code=None):
+def add_input(ctx,prob_code=None,no_open_editor=False):
     check,problem,language,filename=get_info(prob_code)
     if not check:
         ctx.exit("Fix problems")
     spoj = Spoj(problem,language,filename)
-    spoj.add_input()
+    spoj.add_input(no_open_editor)
 
 @click.command()
 @click.option('prob_code','-p',help="prob code")

@@ -31,11 +31,16 @@ class Spoj():
     def num_inputs(self):
             return len([f for f in os.listdir('.') if re.match(r'i_[0-9]+\.txt', f)])
 
-    def add_input(self):
+    def add_input(self,no_open_editor=False):
         # http://stackoverflow.com/questions/1320731/count-number-of-files-with-certain-extension-in-python
         #  num_inputs=len(glob.glob1(os.getcwd(),r'i_[0..9][0..9]*.txt'))
         index=str(self.num_inputs()+1)
-        os.system(config.get_editor()+" i_"+index+".txt eo_"+index+".txt")
+        if no_open_editor:
+            # http://stackoverflow.com/questions/12654772/create-empty-file-using-python
+            open("i_"+index+".txt",'a').close()
+            open("eo_"+index+".txt",'a').close()
+        else:
+            os.system(config.get_editor()+" i_"+index+".txt eo_"+index+".txt")
 
     def cmpile(self,should_commit=True):
         os.system('git add --all')
