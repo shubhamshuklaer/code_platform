@@ -32,6 +32,11 @@ def get_root(ctx):
 
 @click.command()
 @click.pass_context
+def get_language(ctx):
+    click.echo(Config.get_language())
+
+@click.command()
+@click.pass_context
 def is_configured(ctx):
     click.echo(Config.is_configured())
 
@@ -181,5 +186,6 @@ main.add_command(run)
 main.add_command(add_input)
 main.add_command(update_problem_database)
 main.add_command(get_root)
+main.add_command(get_language)
 main.add_command(is_configured)
 main.add_command(is_problem_started)
