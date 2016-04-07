@@ -36,6 +36,16 @@ def get_language(ctx):
     click.echo(Config.get_language())
 
 @click.command()
+@click.option('--language','-l')
+@click.pass_context
+def get_lang_info(ctx,language):
+    if language == None:
+        language=Config.get_language()
+    click.echo("Compile cmd : "+str(Config.get_cmp_cmd(language)))
+    click.echo("Run cmd : "+str(Config.get_run_cmd(language)))
+    click.echo("Extension : "+str(Config.get_extension(language)))
+
+@click.command()
 @click.pass_context
 def is_configured(ctx):
     click.echo(Config.is_configured())
@@ -187,5 +197,6 @@ main.add_command(add_input)
 main.add_command(update_problem_database)
 main.add_command(get_root)
 main.add_command(get_language)
+main.add_command(get_lang_info)
 main.add_command(is_configured)
 main.add_command(is_problem_started)
