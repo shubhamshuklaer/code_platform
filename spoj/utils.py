@@ -99,8 +99,10 @@ def ask_credentials():
 
 
 
-def get_info(cwd):
-    info_file=os.path.join(cwd,'info.txt')
+def get_info(prob_dir):
+    if not os.path.exists(prob_dir):
+        return False,None,None,None
+    info_file=os.path.join(prob_dir,'info.txt')
     if not os.path.exists(info_file):
         return False,None,None,None
     tmp_config=ConfigParser.ConfigParser()

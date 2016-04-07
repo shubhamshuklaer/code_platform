@@ -38,12 +38,23 @@ def is_configured(ctx):
 
 @click.command()
 @click.option('prob_code','-p',help="prob code")
+@click.pass_context
+def is_problem_started(ctx,prob_code):
+    check,problem,language,filename=get_info(prob_code)
+    if check:
+        click.echo("1")
+    else:
+        click.echo("0")
+
+
+@click.command()
+@click.option('prob_code','-p',help="prob code")
 @click.option('no_open_editor','-n',help="Don't open editor",is_flag=True)
 @click.pass_context
 def add_input(ctx,prob_code=None,no_open_editor=False):
     check,problem,language,filename=get_info(prob_code)
     if not check:
-        ctx.exit("Fix problems")
+        ctx.exit("Problem does not exist run spoj start first")
     spoj = Spoj(problem,language,filename)
     spoj.add_input(no_open_editor)
 
@@ -53,7 +64,7 @@ def add_input(ctx,prob_code=None,no_open_editor=False):
 def cmpile(ctx,prob_code=None):
     check,problem,language,filename=get_info(prob_code)
     if not check:
-        ctx.exit("Fix problems")
+        ctx.exit("Problem does not exist run spoj start first")
     spoj = Spoj(problem,language,filename)
     spoj.cmpile()
 
@@ -65,7 +76,7 @@ def cmpile(ctx,prob_code=None):
 def run(ctx,test_case_num=None,prob_code=None,should_cmpile=False):
     check,problem,language,filename=get_info(prob_code)
     if not check:
-        ctx.exit("Fix problems")
+        ctx.exit("Problem does not exist run spoj start first")
     spoj = Spoj(problem,language,filename)
     spoj.run(test_case_num,should_cmpile)
 
@@ -77,7 +88,7 @@ def run(ctx,test_case_num=None,prob_code=None,should_cmpile=False):
 def submit(ctx,prob_code=None):
     check,problem,language,filename=get_info(prob_code)
     if not check:
-        ctx.exit("Fix problems")
+        ctx.exit("Problem does not exist run spoj start first")
     spoj = Spoj(problem,language,filename)
     submit_status, message = spoj.submit()
     if submit_status:
@@ -171,3 +182,4 @@ main.add_command(add_input)
 main.add_command(update_problem_database)
 main.add_command(get_root)
 main.add_command(is_configured)
+main.add_command(is_problem_started)
