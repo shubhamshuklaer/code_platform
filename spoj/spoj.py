@@ -26,6 +26,8 @@ class Spoj():
         self.language = language
         self.filename = filename
         self.prob_dir=os.path.join(os.path.join(config.get_root(),'spoj'),self.problem)
+        if not os.path.exists(self.prob_dir):
+            os.mkdir(self.prob_dir)
         os.chdir(self.prob_dir)
 
     def num_inputs(self):
