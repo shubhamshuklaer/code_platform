@@ -58,6 +58,8 @@ class Spoj():
             status="failed"
         if should_commit:
             os.system('git commit -m "%s compile %s"' %(self.problem,status))
+        if ret_val != 0:
+            exit(2)
 
     def run(self,test_case_num,should_cmpile):
         if should_cmpile:
