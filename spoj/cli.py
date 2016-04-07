@@ -30,6 +30,11 @@ def get_info(prob_code):
 def get_root(ctx):
     click.echo(Config.get_root())
 
+@click.command()
+@click.pass_context
+def is_configured(ctx):
+    click.echo(Config.is_configured())
+
 
 @click.command()
 @click.option('prob_code','-p',help="prob code")
@@ -138,6 +143,9 @@ def config(ctx, language, credential,root,extension,cmp_cmd,run_cmd,editor,confi
         utils.config_set_run_cmd(tmp_lang)
     if editor or config_all:
         utils.config_set_editor()
+    if config_all:
+        # We came here means everything configured properly
+        Config.set_configured()
 
 
 @click.command()
@@ -161,3 +169,4 @@ main.add_command(run)
 main.add_command(add_input)
 main.add_command(update_problem_database)
 main.add_command(get_root)
+main.add_command(is_configured)

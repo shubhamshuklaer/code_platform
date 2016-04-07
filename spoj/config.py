@@ -4,6 +4,27 @@ import ConfigParser
 import utils
 import lang
 
+
+def is_configured():
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if config.has_option('configured', 'configured'):
+        return config.get('configured', 'configured')
+    else:
+        return 0
+
+def set_configured():
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    try:
+        config.add_section('configured')
+    except ConfigParser.DuplicateSectionError:
+        pass
+    config.set('configured', 'configured', "1")
+    with open(utils.get_config_file(), 'wb') as configfile:
+        config.write(configfile)
+
+
 def set_credentials(username,password):
     config = ConfigParser.ConfigParser()
     config.read([utils.get_config_file()])
