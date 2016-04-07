@@ -90,8 +90,9 @@ def submit(ctx,prob_code=None):
 @click.command()
 @click.argument('problem',required=True)
 @click.option('--language','-l')
+@click.option('no_open','-n',help='do not open browser or editor',is_flag=True)
 @click.pass_context
-def start(ctx,problem,language):
+def start(ctx,problem,language,no_open=False):
     if language is None:
         language=Config.get_language()
     if language is None:
@@ -103,7 +104,7 @@ def start(ctx,problem,language):
     if Config.get_run_cmd(language) is None:
         ctx.exit("Please set run_cmd for lang "+language)
     spoj=Spoj(problem,language,problem+"."+Config.get_extension(language))
-    spoj.start()
+    spoj.start(no_open)
 
 
 @click.command()

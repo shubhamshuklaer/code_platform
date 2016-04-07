@@ -101,7 +101,7 @@ class Spoj():
             click.echo("Test case num : "+test_case_num+" Failed")
             return False
 
-    def start(self):
+    def start(self,no_open=False):
         prob_dir=os.path.join(os.path.join(config.get_root(),'spoj'),self.problem)
 
         if not os.path.exists(prob_dir):
@@ -120,7 +120,7 @@ class Spoj():
             with open(prob_info_file,'wb') as info_file:
                 info.write(info_file)
 
-        if config.get_editor() is not None:
+        if config.get_editor() is not None and not no_open:
             os.system('xdg-open '+urls.PROBLEM_URL+self.problem)
             os.chdir(prob_dir)
             os.system(config.get_editor()+" "+self.filename)
