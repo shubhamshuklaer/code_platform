@@ -18,6 +18,7 @@ import sys
 #  import glob
 import re
 from subprocess import Popen,PIPE,STDOUT
+import shlex
 
 class Spoj():
 
@@ -91,7 +92,7 @@ class Spoj():
         os.system('git commit -m " %s "' % (message))
 
     def run_helper(self,cmd,test_case_num):
-        p=Popen(cmd,stdout=PIPE, stderr=PIPE, stdin=PIPE)
+        p=Popen(shlex.split(cmd),stdout=PIPE, stderr=PIPE, stdin=PIPE)
         p.stdin.write(open("i_"+test_case_num+".txt").read())
         expected_out=open("eo_"+test_case_num+".txt").read()
         output=p.stdout.read()
