@@ -151,3 +151,21 @@ def get_editor():
         return config.get('editor', "editor")
     else:
         return None
+
+
+def set_learning_rate(learning_rate):
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if not config.has_section('learning_rate'):
+        config.add_section('learning_rate')
+    config.set('learning_rate','learning_rate',learning_rate)
+    with open(utils.get_config_file(),'wb') as configfile:
+        config.write(configfile)
+
+def get_learning_rate():
+    config = ConfigParser.ConfigParser()
+    config.read([utils.get_config_file()])
+    if config.has_option('learning_rate', "learning_rate"):
+        return config.get('learning_rate', "learning_rate")
+    else:
+        return None

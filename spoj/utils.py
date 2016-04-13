@@ -419,3 +419,10 @@ def update_problem_database():
     set_problem_database(problem_database)
     print_problem_database()
     print_tags_database()
+
+def config_set_learning_rate():
+    while True:
+        extension = float(raw_input('set the learning rate: '))
+        config.set_learning_rate(extension)
+        if (extension<=1 and extension>=0):
+            break
