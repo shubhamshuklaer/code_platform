@@ -1,6 +1,7 @@
 import os
 import click
 import lang
+import suggest_problem
 import utils
 from subprocess import Popen
 import config as Config
@@ -167,6 +168,23 @@ def start(ctx,problem,language,no_open=False):
 def update_problem_database(ctx):
     utils.update_problem_database()
 
+@click.command()
+@click.pass_context
+def set_learning_rate(ctx):
+    utils.config_set_learning_rate()
+    pass
+
+
+
+@click.command()
+@click.pass_context
+def recommend_problem(ctx):
+    rate = Config.get_learning_rate()
+    while(rate is None):
+        utils.config_set_learning_rate()
+        rate = Config.get_learning_rate()
+    suggest_problem.recommendProblem(rate)
+    pass
 
 
 @click.command()
@@ -224,6 +242,8 @@ main.add_command(cmpile)
 main.add_command(run)
 main.add_command(add_input)
 main.add_command(update_problem_database)
+main.add_command(set_learning_rate)
+main.add_command(recommend_problem)
 main.add_command(get_root)
 main.add_command(get_language)
 main.add_command(get_lang_info)

@@ -186,26 +186,25 @@ def config_set_credentials():
     return True
 
 def ask_language():
-    search_term=raw_input("enter lang name to search: ")
-    click.echo("Search result")
-    found=False
-    for key in lang.LANG_DICT:
-        val=lang.LANG_DICT[key]
-        if search_term.lower() in val.lower():
-            found=True
-            click.echo(str(key)+" : "+val)
+    while True:
+        search_term=raw_input("enter lang name to search: ")
+        click.echo("Search result")
+        found=False
+        for key in lang.LANG_DICT:
+            val=lang.LANG_DICT[key]
+            if search_term.lower() in val.lower():
+                found=True
+                click.echo(str(key)+" : "+val)
 
-    if not found:
-        click.echo("No such language found, try searching for something smaller")
-        return None
-
-    language=raw_input("enter language code: ")
-    if int(language) in lang.LANG_DICT:
-        click.echo("Language : "+lang.LANG_DICT[int(language)])
-        return language
-    else:
-        click.echo("Choose proper language code")
-        return None
+        if not found:
+            click.echo("No such language found, try searching for something smaller")
+        else:
+            language=raw_input("enter language code: ")
+            if int(language) in lang.LANG_DICT:
+                click.echo("Language : "+lang.LANG_DICT[int(language)])
+                return language
+            else:
+                click.echo("Choose proper language code")
 
 def config_set_language():
     language=ask_language()
@@ -419,3 +418,10 @@ def update_problem_database():
     set_problem_database(problem_database)
     print_problem_database()
     print_tags_database()
+
+def config_set_learning_rate():
+    while True:
+        extension = float(raw_input('set the learning rate: '))
+        config.set_learning_rate(extension)
+        if (extension<=1 and extension>=0):
+            break
