@@ -5,6 +5,8 @@ import utils
 from subprocess import Popen
 import config as Config
 from spoj import Spoj
+from recommend import get_recommended_problem_code, set_rating
+
 # http://click.pocoo.org/5/bashcomplete/
 # Bash autocomplete
 # _SPOJ_COMPLETE=source spoj > spoj-autocomplete.sh
@@ -23,6 +25,19 @@ def get_info(prob_code):
     else:
         prob_dir=os.getcwd()
     return utils.get_info(prob_dir)
+
+@click.command()
+@click.pass_context
+def get_recommended(ctx):
+    click.echo(get_recommended_problem_code())
+
+@click.command()
+@click.option('--rating', type=int)
+@click.option('--prob_code')
+@click.pass_context
+def rate(ctx, rating, prob_code):
+    # pass
+    set_rating(rating, 45, prob_code, compute=False, SVDNeighbourhood=False)
 
 
 @click.command()
@@ -215,3 +230,6 @@ main.add_command(get_lang_info)
 main.add_command(set_lang_info)
 main.add_command(is_configured)
 main.add_command(is_problem_started)
+main.add_command(get_recommended)
+main.add_command(rate)
+
