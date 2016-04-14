@@ -192,6 +192,10 @@ class Spoj():
                 soup = BeautifulSoup(data['time'],"lxml")
                 time_taken = soup.get_text()
                 print 'Time: %s' % time_taken.strip()
+                if "accepted" in data['status_description']:
+                    prob_db=utils.get_problem_database()
+                    prob_db[self.problem]['solved']=True
+                    utils.set_problem_database(prob_db)
                 break
             else:
                 soup = BeautifulSoup(data['status_description'],"lxml")
