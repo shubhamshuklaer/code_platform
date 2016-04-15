@@ -18,8 +18,8 @@ You need to use python2 and sudo(Linux)
 <!-- Documentation is present at [Read the Docs](http://python-spoj.rtfd.org) and also at the [PythonHosted](https://pythonhosted.org/python_spoj/) -->
 
 ## Usage
-* Checkout [Code AI](https://github.com/shubhamshuklaer/code_ai), a web based
-interface to spoj, with some extra AI capabilities.
+* Checkout [Code Platform web interface](https://github.com/shubhamshuklaer/code_platform_web), a web based
+interface to spoj.
 * Help
     * `spoj --help`
     * for help regarding a specific option like "config" use `spoj config --help`
